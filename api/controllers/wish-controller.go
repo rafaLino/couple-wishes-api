@@ -25,13 +25,14 @@ func (c *WishController) GetAll(w http.ResponseWriter, r *http.Request) {
 	user, ok := c.GetUser(r)
 
 	if !ok {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(nil, http.StatusBadRequest, w)
 		return
 	}
 	output, err := service.GetAll(user.CoupleID)
 
 	if err != nil {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(err, http.StatusBadRequest, w)
+		return
 	}
 
 	c.SendJSON(w, output, http.StatusOK)
@@ -45,13 +46,13 @@ func (c *WishController) Get(w http.ResponseWriter, r *http.Request) {
 	parsedID, err := strconv.ParseInt(id, 10, 64)
 
 	if err != nil {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(err, http.StatusBadRequest, w)
 		return
 	}
 	output, err := service.Get(parsedID)
 
 	if err != nil {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(err, http.StatusBadRequest, w)
 		return
 	}
 
@@ -68,14 +69,14 @@ func (c *WishController) Save(w http.ResponseWriter, r *http.Request) {
 	input.CoupleID = user.CoupleID
 
 	if err != nil {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(err, http.StatusBadRequest, w)
 		return
 	}
 
 	output, err := service.Save(input)
 
 	if err != nil {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(err, http.StatusBadRequest, w)
 		return
 	}
 
@@ -89,7 +90,7 @@ func (c *WishController) Update(w http.ResponseWriter, r *http.Request) {
 	id, err := c.GetIntParam(r, "id")
 
 	if err != nil {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(nil, http.StatusBadRequest, w)
 		return
 	}
 	user, _ := c.GetUser(r)
@@ -98,14 +99,14 @@ func (c *WishController) Update(w http.ResponseWriter, r *http.Request) {
 	input.CoupleID = user.CoupleID
 
 	if err != nil {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(err, http.StatusBadRequest, w)
 		return
 	}
 
 	err = service.Update(id, input)
 
 	if err != nil {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(nil, http.StatusBadRequest, w)
 		return
 	}
 
@@ -116,18 +117,17 @@ func (c *WishController) Delete(w http.ResponseWriter, r *http.Request) {
 	var service ports.IWishService
 	container.Resolve(&service)
 
-	id := c.GetParam(r, "id")
-	parsedID, err := strconv.ParseInt(id, 10, 64)
+	id, err := c.GetIntParam(r, "id")
 
 	if err != nil {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(nil, http.StatusBadRequest, w)
 		return
 	}
 
-	err = service.Delete(parsedID)
+	err = service.Delete(id)
 
 	if err != nil {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(err, http.StatusBadRequest, w)
 		return
 	}
 
@@ -143,14 +143,14 @@ func (c *WishController) Create(w http.ResponseWriter, r *http.Request) {
 	err := c.GetContent(&input, r)
 
 	if err != nil {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(nil, http.StatusBadRequest, w)
 		return
 	}
 
 	output, err := service.Create(input.Url, user.CoupleID)
 
 	if err != nil {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(err, http.StatusBadRequest, w)
 		return
 	}
 

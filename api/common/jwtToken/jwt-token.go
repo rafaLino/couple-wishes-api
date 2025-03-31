@@ -1,4 +1,4 @@
-package common
+package jwtToken
 
 import (
 	"errors"
@@ -10,17 +10,12 @@ import (
 	valueObjects "github.com/rafaLino/couple-wishes-api/value-objects"
 )
 
-type JwtToken struct {
-	Token string        `json:"token"`
-	User  entities.User `json:"user"`
+type TokenData struct {
+	Token string              `json:"token"`
+	User  entities.UserOutput `json:"user"`
 }
 
-func NewJwtToken() *JwtToken {
-	return &JwtToken{}
-
-}
-
-func (t *JwtToken) GenerateToken(user entities.User) (*JwtToken, error) {
+func GenerateToken(user entities.User) (string, *entities.User, error) {
 	key := os.Getenv("JWT_SECRET")
 	claims := jwt.MapClaims{
 		"id":        user.ID,
@@ -35,32 +30,30 @@ func (t *JwtToken) GenerateToken(user entities.User) (*JwtToken, error) {
 	tokenString, err := token.SignedString([]byte(key))
 
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
-	t.Token = tokenString
-	t.User = user
-	return t, nil
+
+	return tokenString, &user, nil
 }
 
-func (t *JwtToken) VerifyToken(tokenString string) error {
+func VerifyToken(tokenString string) (string, *entities.User, error) {
 	key := os.Getenv("JWT_SECRET")
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(key), nil
 	})
 
 	if err != nil {
-		return err
+		return "", nil, err
 	}
 	if !token.Valid {
-		return errors.New("invalid token")
+		return "", nil, errors.New("invalid token")
 	}
 	claims := token.Claims.(jwt.MapClaims)
-	t.Token = token.Raw
-	t.User = entities.User{
+	user := &entities.User{
 		ID:       int64(claims["id"].(float64)),
 		Name:     claims["name"].(string),
 		Username: *valueObjects.NewUsername(claims["username"].(string)),
 		CoupleID: int64(claims["couple_id"].(float64)),
 	}
-	return nil
+	return token.Raw, user, nil
 }

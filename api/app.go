@@ -90,4 +90,5 @@ func initBundles() []common.Bundle {
 func initDependencies() {
 	var aiAdapter ports.AIAdapter
 	container.Resolve(&aiAdapter)
+	aiAdapter.Connect()
 }

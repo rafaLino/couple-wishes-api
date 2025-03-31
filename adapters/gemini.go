@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 	"os"
 
 	"github.com/google/generative-ai-go/genai"
@@ -32,21 +33,23 @@ func (a *GeminiAdapter) Connect() error {
 	}
 
 	if modelName == "" {
-		modelName = "gemini-1.5-flash"
+		modelName = "gemini-1.5-flash-8b"
 	}
 
 	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
 
 	if err != nil {
-		return err
+		log.Fatalf("unexpected error occurred! %v", err)
 	}
 
 	argcc := &genai.CachedContent{
 		Model: modelName,
 		SystemInstruction: genai.NewUserContent(genai.Text(`Your task is to generate json response given a url link. 
-		You should only return the json. Do not add any other text or explanation.
-		You will receive a url and must generate a json with the following fields: title, description, url and price.
-		the title must be as short as possible.`)),
+			You should only return the json. Do not add any other text or explanation.
+			You will receive a url and must generate a json with the following fields: title, description, url and price. 
+			the title must be short;
+			return empty string if price is nnt found;
+			the description must be a small description for the product.`)),
 	}
 
 	cachedContent, err := client.CreateCachedContent(ctx, argcc)
@@ -56,7 +59,7 @@ func (a *GeminiAdapter) Connect() error {
 	}
 
 	model := client.GenerativeModelFromCachedContent(cachedContent)
-
+	model.ResponseMIMEType = "application/json"
 	a.model = model
 	a.context = ctx
 	return nil

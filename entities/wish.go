@@ -30,7 +30,7 @@ func MapToWish(wish WishInput) db.Wish {
 	return db.Wish{
 		Title:       wish.Title,
 		Url:         pgtype.Text{String: wish.Url, Valid: true},
-		Description: pgtype.Text{String: wish.Url, Valid: true},
+		Description: pgtype.Text{String: wish.Description, Valid: true},
 		Price:       pgtype.Text{String: wish.Price, Valid: true},
 		Completed:   pgtype.Bool{Bool: false, Valid: true},
 		CoupleID:    pgtype.Int8{Int64: wish.CoupleID, Valid: true},

@@ -2,7 +2,7 @@ package entities
 
 import (
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/rafaLino/couple-wishes-api/infrastructure/db"
+	"github.com/rafaLino/couple-wishes-api/infra/db"
 )
 
 type WishInput struct {

@@ -1,7 +1,7 @@
 package entities
 
 import (
-	"github.com/rafaLino/couple-wishes-api/infrastructure/db"
+	"github.com/rafaLino/couple-wishes-api/infra/db"
 	valueObjects "github.com/rafaLino/couple-wishes-api/value-objects"
 )
 

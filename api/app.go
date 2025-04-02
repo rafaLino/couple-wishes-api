@@ -11,7 +11,7 @@ import (
 	"github.com/rafaLino/couple-wishes-api/api/common"
 	"github.com/rafaLino/couple-wishes-api/api/controllers"
 	"github.com/rafaLino/couple-wishes-api/api/ioc"
-	dbclient "github.com/rafaLino/couple-wishes-api/infrastructure/db-client"
+	dbclient "github.com/rafaLino/couple-wishes-api/infra/db-client"
 	"github.com/rafaLino/couple-wishes-api/ports"
 
 	"github.com/gorilla/mux"

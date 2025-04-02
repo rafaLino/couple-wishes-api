@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/rafaLino/couple-wishes-api/infrastructure/db"
+	"github.com/rafaLino/couple-wishes-api/infra/db"
 )
 
 type DbContext struct {

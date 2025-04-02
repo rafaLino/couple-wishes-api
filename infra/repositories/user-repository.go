@@ -6,8 +6,8 @@ import (
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/rafaLino/couple-wishes-api/entities"
-	"github.com/rafaLino/couple-wishes-api/infrastructure/db"
-	dbclient "github.com/rafaLino/couple-wishes-api/infrastructure/db-client"
+	"github.com/rafaLino/couple-wishes-api/infra/db"
+	dbclient "github.com/rafaLino/couple-wishes-api/infra/db-client"
 	"github.com/rafaLino/couple-wishes-api/ports"
 	valueObjects "github.com/rafaLino/couple-wishes-api/value-objects"
 )

@@ -1,17 +1,17 @@
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
   id   BIGSERIAL PRIMARY KEY,
   name text      NOT NULL,
   username text UNIQUE NOT NULL,
   password bytea NOT NULL
 );
 
-CREATE TABLE couples (
+CREATE TABLE IF NOT EXISTS couples (
   id   BIGSERIAL PRIMARY KEY,
   user_id BIGSERIAL REFERENCES users(id),
   partner_id BIGSERIAL REFERENCES users(id)
 );
 
-CREATE TABLE wishes (
+CREATE TABLE IF NOT EXISTS wishes (
   id   BIGSERIAL PRIMARY KEY,
   title text NOT NULL,
   description text, 

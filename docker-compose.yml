@@ -1,0 +1,47 @@
+services: 
+  postgres:
+    image: postgres:alpine
+    container_name: cw_postgresdb
+    ports: 
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: 1234
+    volumes: 
+      - ./database_data:/data
+    networks:
+      - couple-wishes-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  migrate: 
+    image: migrate/migrate
+    depends_on: 
+      postgres:
+        condition: service_healthy
+    networks:
+      - couple-wishes-network
+    volumes: 
+      - ./infra/sql:/infra/sql
+    command: ["-path", "/infra/sql/migrations", "-database", "postgres://postgres:1234@cw_postgresdb:5432/postgres?sslmode=disable", "up"]
+  
+  api:
+    container_name: couple-wishes
+    build: .
+    env_file: 
+      - .env
+    ports: 
+      - 9000:9000
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - couple-wishes-network
+
+networks:
+  couple-wishes-network:
+    driver: bridge
+
+    

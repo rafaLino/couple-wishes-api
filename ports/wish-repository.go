@@ -1,6 +1,6 @@
 package ports
 
-import "github.com/rafaLino/couple-wishes-api/infrastructure/db"
+import "github.com/rafaLino/couple-wishes-api/infra/db"
 
 type IWishRepository interface {
 	Get(id int64) (*db.Wish, error)

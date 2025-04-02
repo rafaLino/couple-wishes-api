@@ -3,8 +3,8 @@ package ioc
 import (
 	"github.com/golobby/container/v3"
 	"github.com/rafaLino/couple-wishes-api/adapters"
-	dbclient "github.com/rafaLino/couple-wishes-api/infrastructure/db-client"
-	"github.com/rafaLino/couple-wishes-api/infrastructure/repositories"
+	dbclient "github.com/rafaLino/couple-wishes-api/infra/db-client"
+	"github.com/rafaLino/couple-wishes-api/infra/repositories"
 	"github.com/rafaLino/couple-wishes-api/ports"
 	"github.com/rafaLino/couple-wishes-api/services"
 )

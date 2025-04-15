@@ -6,13 +6,14 @@ import (
 )
 
 type WishService struct {
-	repository ports.IWishRepository
-	aiAdapter  ports.AIAdapter
+	repository     ports.IWishRepository
+	userRepository ports.IUserRepository
+	aiAdapter      ports.AIAdapter
 	ports.IWishService
 }
 
-func NewWishService(repository ports.IWishRepository, aiAdapter ports.AIAdapter) ports.IWishService {
-	return &WishService{repository: repository, aiAdapter: aiAdapter}
+func NewWishService(repository ports.IWishRepository, aiAdapter ports.AIAdapter, userRepository ports.IUserRepository) ports.IWishService {
+	return &WishService{repository: repository, aiAdapter: aiAdapter, userRepository: userRepository}
 }
 
 func (s *WishService) Save(input entities.WishInput) (*entities.WishOutput, error) {
@@ -63,8 +64,8 @@ func (s *WishService) MaskAsCompleted(id int64) error {
 	return s.repository.MaskAsCompleted(id)
 }
 
-func (s *WishService) Create(url string, coupleId int64) (*entities.WishOutput, error) {
-	input, err := s.aiAdapter.GenerateResponse(url)
+func (s *WishService) Create(text string, coupleId int64) (*entities.WishOutput, error) {
+	input, err := s.aiAdapter.GenerateResponse(text)
 
 	if err != nil {
 		return nil, err
@@ -79,4 +80,21 @@ func (s *WishService) Create(url string, coupleId int64) (*entities.WishOutput, 
 	wish.ID = wishId
 	output := entities.MapToWishOutput(wish)
 	return &output, err
+}
+
+func (s *WishService) CreateFromWhatsApp(req entities.WhatsAppMessage) error {
+
+	message := req.Entry[0].Changes[0].Value.Messages[0]
+
+	user, err := s.userRepository.GetByPhone(message.From)
+
+	if err != nil {
+		return err
+	}
+
+	if message.Type == "text" {
+		_, err = s.Create(message.Text.Body, user.CoupleID)
+	}
+
+	return err
 }

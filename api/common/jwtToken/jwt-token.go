@@ -22,6 +22,7 @@ func GenerateToken(user entities.User) (string, *entities.User, error) {
 		"name":      user.Name,
 		"username":  user.Username.String(),
 		"couple_id": user.CoupleID,
+		"phone":     user.Phone,
 		"exp":       time.Now().Add(time.Hour * 36).Unix(),
 	}
 
@@ -53,6 +54,7 @@ func VerifyToken(tokenString string) (string, *entities.User, error) {
 		ID:       int64(claims["id"].(float64)),
 		Name:     claims["name"].(string),
 		Username: *valueObjects.NewUsername(claims["username"].(string)),
+		Phone:    claims["phone"].(string),
 		CoupleID: int64(claims["couple_id"].(float64)),
 	}
 	return token.Raw, user, nil

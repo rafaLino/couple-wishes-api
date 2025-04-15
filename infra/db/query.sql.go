@@ -72,9 +72,9 @@ func (q *Queries) CreateCouple(ctx context.Context, arg CreateCoupleParams) (int
 
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (
-  name, username, password
+  name, username, password, phone
 ) VALUES (
-  $1, $2, $3
+  $1, $2, $3, $4
 )
 RETURNING id
 `
@@ -83,10 +83,16 @@ type CreateUserParams struct {
 	Name     string
 	Username string
 	Password []byte
+	Phone    string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (int64, error) {
-	row := q.db.QueryRow(ctx, createUser, arg.Name, arg.Username, arg.Password)
+	row := q.db.QueryRow(ctx, createUser,
+		arg.Name,
+		arg.Username,
+		arg.Password,
+		arg.Phone,
+	)
 	var id int64
 	err := row.Scan(&id)
 	return id, err
@@ -176,7 +182,7 @@ func (q *Queries) GetPartnerName(ctx context.Context, arg GetPartnerNameParams) 
 }
 
 const getUser = `-- name: GetUser :one
-SELECT users.id, users.name, users.username, couples.id as couple_id
+SELECT users.id, users.name, users.username, users.phone, couples.id as couple_id
 FROM users
 LEFT JOIN couples 
 ON couples.user_id = users.id 
@@ -188,6 +194,7 @@ type GetUserRow struct {
 	ID       int64
 	Name     string
 	Username string
+	Phone    string
 	CoupleID pgtype.Int8
 }
 
@@ -198,13 +205,44 @@ func (q *Queries) GetUser(ctx context.Context, id int64) (GetUserRow, error) {
 		&i.ID,
 		&i.Name,
 		&i.Username,
+		&i.Phone,
+		&i.CoupleID,
+	)
+	return i, err
+}
+
+const getUserByPhone = `-- name: GetUserByPhone :one
+SELECT users.id, users.name, users.username, users.phone, couples.id as couple_id
+FROM users
+LEFT JOIN couples
+ON couples.user_id = users.id
+OR couples.partner_id = users.id
+WHERE users.phone = $1 LIMIT 1
+`
+
+type GetUserByPhoneRow struct {
+	ID       int64
+	Name     string
+	Username string
+	Phone    string
+	CoupleID pgtype.Int8
+}
+
+func (q *Queries) GetUserByPhone(ctx context.Context, phone string) (GetUserByPhoneRow, error) {
+	row := q.db.QueryRow(ctx, getUserByPhone, phone)
+	var i GetUserByPhoneRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Username,
+		&i.Phone,
 		&i.CoupleID,
 	)
 	return i, err
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT users.id, users.name, users.username, couples.id as couple_id
+SELECT users.id, users.name, users.username, users.phone, couples.id as couple_id
 FROM users
 LEFT JOIN couples
 ON couples.user_id = users.id
@@ -216,6 +254,7 @@ type GetUserByUsernameRow struct {
 	ID       int64
 	Name     string
 	Username string
+	Phone    string
 	CoupleID pgtype.Int8
 }
 
@@ -226,13 +265,14 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (GetUs
 		&i.ID,
 		&i.Name,
 		&i.Username,
+		&i.Phone,
 		&i.CoupleID,
 	)
 	return i, err
 }
 
 const getUserWithPassword = `-- name: GetUserWithPassword :one
-SELECT users.id, users.name, users.username, users.password, couples.id as couple_id FROM users
+SELECT users.id, users.name, users.username, users.password, users.phone, couples.id as couple_id FROM users
 LEFT JOIN couples
 ON couples.user_id = users.id
 OR couples.partner_id = users.id
@@ -244,6 +284,7 @@ type GetUserWithPasswordRow struct {
 	Name     string
 	Username string
 	Password []byte
+	Phone    string
 	CoupleID pgtype.Int8
 }
 
@@ -255,13 +296,14 @@ func (q *Queries) GetUserWithPassword(ctx context.Context, username string) (Get
 		&i.Name,
 		&i.Username,
 		&i.Password,
+		&i.Phone,
 		&i.CoupleID,
 	)
 	return i, err
 }
 
 const getUsers = `-- name: GetUsers :many
-SELECT users.id, users.name, users.username, couples.id as couple_id
+SELECT users.id, users.name, users.username, users.phone, couples.id as couple_id
 FROM users
 LEFT JOIN couples
 ON couples.user_id = users.id
@@ -272,6 +314,7 @@ type GetUsersRow struct {
 	ID       int64
 	Name     string
 	Username string
+	Phone    string
 	CoupleID pgtype.Int8
 }
 
@@ -288,6 +331,7 @@ func (q *Queries) GetUsers(ctx context.Context) ([]GetUsersRow, error) {
 			&i.ID,
 			&i.Name,
 			&i.Username,
+			&i.Phone,
 			&i.CoupleID,
 		); err != nil {
 			return nil, err

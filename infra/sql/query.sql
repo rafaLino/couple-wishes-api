@@ -30,14 +30,14 @@ DELETE FROM wishes
 WHERE id = $1;
 
 -- name: GetUsers :many
-SELECT users.id, users.name, users.username, couples.id as couple_id
+SELECT users.id, users.name, users.username, users.phone, couples.id as couple_id
 FROM users
 LEFT JOIN couples
 ON couples.user_id = users.id
 OR couples.partner_id = users.id;
 
 -- name: GetUser :one
-SELECT users.id, users.name, users.username, couples.id as couple_id
+SELECT users.id, users.name, users.username, users.phone, couples.id as couple_id
 FROM users
 LEFT JOIN couples 
 ON couples.user_id = users.id 
@@ -45,12 +45,20 @@ OR couples.partner_id = users.id
 WHERE users.id = $1 LIMIT 1;
 
 -- name: GetUserByUsername :one
-SELECT users.id, users.name, users.username, couples.id as couple_id
+SELECT users.id, users.name, users.username, users.phone, couples.id as couple_id
 FROM users
 LEFT JOIN couples
 ON couples.user_id = users.id
 OR couples.partner_id = users.id
 WHERE users.username = $1 LIMIT 1;
+
+-- name: GetUserByPhone :one
+SELECT users.id, users.name, users.username, users.phone, couples.id as couple_id
+FROM users
+LEFT JOIN couples
+ON couples.user_id = users.id
+OR couples.partner_id = users.id
+WHERE users.phone = $1 LIMIT 1;
 
 -- name: CheckUserName :one
 SELECT count(users.id) FROM users
@@ -65,9 +73,9 @@ WHERE username = $1 LIMIT 1;
 
 -- name: CreateUser :one
 INSERT INTO users (
-  name, username, password
+  name, username, password, phone
 ) VALUES (
-  $1, $2, $3
+  $1, $2, $3, $4
 )
 RETURNING id;
 

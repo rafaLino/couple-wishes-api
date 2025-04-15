@@ -45,9 +45,15 @@ func (a *App) ConfigEndpoints() *App {
 	a.router = mux.NewRouter()
 	s := a.router.PathPrefix("/api").Subrouter()
 
+	HealthCheck(a.router)
+
 	for _, bundle := range initBundles() {
 		for _, route := range bundle.GetRoutes() {
-			s.HandleFunc(route.Path, route.Handler).Methods(route.Method)
+			if strings.Contains(route.Path, "webhook") {
+				a.router.HandleFunc(route.Path, route.Handler).Methods(route.Method)
+			} else {
+				s.HandleFunc(route.Path, route.Handler).Methods(route.Method)
+			}
 		}
 	}
 
@@ -84,6 +90,7 @@ func initBundles() []common.Bundle {
 	return []common.Bundle{
 		controllers.NewWishRouter(),
 		controllers.NewUserRouter(),
+		controllers.NewWebhookRouter(),
 	}
 }
 
@@ -91,4 +98,12 @@ func initDependencies() {
 	var aiAdapter ports.AIAdapter
 	container.Resolve(&aiAdapter)
 	aiAdapter.Connect()
+}
+
+func HealthCheck(router *mux.Router) {
+	router.HandleFunc("/healthy", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(200)
+		w.Write([]byte("live!"))
+		return
+	})
 }

@@ -11,12 +11,14 @@ type User struct {
 	Username valueObjects.Username `json:"username"`
 	Password valueObjects.Password `json:"password,omitempty"`
 	CoupleID int64                 `json:"couple_id"`
+	Phone    string                `json:"phone,omitempty"`
 }
 
 type UserInput struct {
 	Name     string `json:"name"`
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Phone    string `json:"phone"`
 }
 
 type UserLoginInput struct {
@@ -46,6 +48,7 @@ func MapToUser(user db.GetUsersRow) User {
 		Name:     user.Name,
 		Username: *valueObjects.NewUsername(user.Username),
 		CoupleID: user.CoupleID.Int64,
+		Phone:    user.Phone,
 	}
 }
 
@@ -63,6 +66,7 @@ func MapGetUserRowToUser(user db.GetUserRow) User {
 		ID:       user.ID,
 		Name:     user.Name,
 		Username: *valueObjects.NewUsername(user.Username),
+		Phone:    user.Phone,
 		CoupleID: user.CoupleID.Int64,
 	}
 }
@@ -72,6 +76,7 @@ func NewUser(input UserInput) User {
 		Name:     input.Name,
 		Username: *valueObjects.NewUsername(input.Username),
 		Password: *valueObjects.NewPassword(input.Password),
+		Phone:    input.Phone,
 	}
 }
 

@@ -19,6 +19,7 @@ type User struct {
 	Name     string
 	Username string
 	Password []byte
+	Phone    string
 }
 
 type Wish struct {

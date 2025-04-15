@@ -73,6 +73,7 @@ func (r *UserRepository) CheckPassword(username valueObjects.Username, password 
 		ID:       user.ID,
 		Name:     user.Name,
 		Username: *valueObjects.NewUsername(user.Username),
+		Phone:    user.Phone,
 		CoupleID: coupleID,
 	}, nil
 }
@@ -83,6 +84,7 @@ func (r *UserRepository) Create(user *entities.User) (int64, error) {
 		Name:     user.Name,
 		Username: user.Username.String(),
 		Password: user.Password.Value(),
+		Phone:    user.Phone,
 	})
 
 	return userId, err
@@ -161,6 +163,29 @@ func (r *UserRepository) GetByUsername(username valueObjects.Username) (*entitie
 		ID:       userRow.ID,
 		Name:     userRow.Name,
 		Username: *valueObjects.NewUsername(userRow.Username),
+		Phone:    userRow.Phone,
+		CoupleID: coupleID,
+	}
+
+	return user, err
+}
+
+func (r *UserRepository) GetByPhone(phone string) (*entities.User, error) {
+	client, err := r.context.GetClient()
+	userRow, err := client.GetUserByPhone(r.context.GetContext(), phone)
+
+	var coupleID int64
+	if userRow.CoupleID.Valid {
+		coupleID = userRow.CoupleID.Int64
+	} else {
+		coupleID = 0
+	}
+
+	user := &entities.User{
+		ID:       userRow.ID,
+		Name:     userRow.Name,
+		Username: *valueObjects.NewUsername(userRow.Username),
+		Phone:    userRow.Phone,
 		CoupleID: coupleID,
 	}
 

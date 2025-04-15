@@ -49,7 +49,9 @@ func (a *GeminiAdapter) Connect() error {
 			You will receive a url and must generate a json with the following fields: title, description, url and price. 
 			the title must be short;
 			return empty string if price is nnt found;
-			the description must be a small description for the product.`)),
+			the description must be a small description for the product.
+			th result must be in pt-br.
+			if you don't find an url, return an empty object.(e.g: "{}")`)),
 	}
 
 	cachedContent, err := client.CreateCachedContent(ctx, argcc)
@@ -65,8 +67,8 @@ func (a *GeminiAdapter) Connect() error {
 	return nil
 }
 
-func (a *GeminiAdapter) GenerateResponse(url string) (*entities.WishInput, error) {
-	response, err := a.model.GenerateContent(a.context, genai.Text(url))
+func (a *GeminiAdapter) GenerateResponse(text string) (*entities.WishInput, error) {
+	response, err := a.model.GenerateContent(a.context, genai.Text(text))
 
 	if err != nil {
 		return nil, err

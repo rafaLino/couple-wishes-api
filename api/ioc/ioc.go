@@ -25,6 +25,10 @@ func (c *Container) RegisterDependencies() error {
 		return adapters.NewGeminiAIAdapter()
 	})
 
+	container.Singleton(func() ports.WhatsAppApiAdapter {
+		return adapters.NewWhatsAppApiAdapter()
+	})
+
 	container.Transient(func(dbContext *dbclient.DbContext) ports.IWishRepository {
 		repo, _ := repositories.NewWishRepository(dbContext)
 		return repo
@@ -35,8 +39,8 @@ func (c *Container) RegisterDependencies() error {
 		return repo
 	})
 
-	container.Transient(func(repository ports.IWishRepository, iaAdapter ports.AIAdapter) ports.IWishService {
-		return services.NewWishService(repository, iaAdapter)
+	container.Transient(func(repository ports.IWishRepository, iaAdapter ports.AIAdapter, userRepository ports.IUserRepository) ports.IWishService {
+		return services.NewWishService(repository, iaAdapter, userRepository)
 	})
 
 	container.Transient(func(repository ports.IUserRepository) ports.IUserService {

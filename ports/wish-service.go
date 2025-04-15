@@ -10,4 +10,5 @@ type IWishService interface {
 	Delete(id int64) error
 	MaskAsCompleted(id int64) error
 	Create(url string, coupleId int64) (*entities.WishOutput, error)
+	CreateFromWhatsApp(req entities.WhatsAppMessage) error
 }

@@ -54,6 +54,10 @@ func (c *Controller) GetParam(r *http.Request, param string) string {
 	return mux.Vars(r)[param]
 }
 
+func (c *Controller) GetQuery(r *http.Request, param string) string {
+	return r.URL.Query().Get(param)
+}
+
 func (c *Controller) GetIntParam(r *http.Request, param string) (int64, error) {
 	value := c.GetParam(r, param)
 	if value == "" {

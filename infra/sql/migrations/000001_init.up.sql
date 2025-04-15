@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS users (
   id   BIGSERIAL PRIMARY KEY,
   name text      NOT NULL,
   username text UNIQUE NOT NULL,
-  password bytea NOT NULL
+  password bytea NOT NULL,
+  phone text UNIQUE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS couples (

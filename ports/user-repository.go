@@ -18,4 +18,5 @@ type IUserRepository interface {
 	CreateCouple(userId, partnerId int64) (int64, error)
 	DeleteCouple(coupleId int64) error
 	GetByUsername(username valueObjects.Username) (*entities.User, error)
+	GetByPhone(phone string) (*entities.User, error)
 }

@@ -86,15 +86,17 @@ func (s *WishService) CreateFromWhatsApp(req entities.WhatsAppMessage) error {
 
 	message := req.Entry[0].Changes[0].Value.Messages[0]
 
+	if message.Type != "text" {
+		return nil
+	}
+
 	user, err := s.userRepository.GetByPhone(message.From)
 
 	if err != nil {
 		return err
 	}
 
-	if message.Type == "text" {
-		_, err = s.Create(message.Text.Body, user.CoupleID)
-	}
+	_, err = s.Create(message.Text.Body, user.CoupleID)
 
 	return err
 }

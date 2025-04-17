@@ -1,11 +1,13 @@
 package controllers
 
 import (
+	"io"
 	"net/http"
 	"os"
 
 	"github.com/golobby/container/v3"
 	"github.com/rafaLino/couple-wishes-api/api/common"
+	"github.com/rafaLino/couple-wishes-api/api/common/validMac"
 	"github.com/rafaLino/couple-wishes-api/entities"
 	"github.com/rafaLino/couple-wishes-api/ports"
 )
@@ -37,6 +39,16 @@ func (c *WebhookController) Get(w http.ResponseWriter, r *http.Request) {
 func (c *WebhookController) Post(w http.ResponseWriter, r *http.Request) {
 	var service ports.IWishService
 	container.Resolve(&service)
+
+	signature := r.Header.Get("x-hub-signature-256")
+	rawBody, _ := io.ReadAll(r.Body)
+
+	isValid := validMac.ValidMAC(rawBody, []byte(signature), []byte(WEBHOOK_VERIFY_TOKEN))
+
+	if !isValid {
+		c.SendJSON(w, nil, http.StatusBadRequest)
+		return
+	}
 
 	var input entities.WhatsAppMessage
 	err := c.GetContent(&input, r)

@@ -53,8 +53,7 @@ jobs:
                   -e JWT_SECRET-${{ secrets.JWT_SECRET }}
                   -e WEBHOOK_VERIFY_TOKEN=${{ secrets.WEBHOOK_VERIFY_TOKEN }}
                   -e APP_PORT=${{ vars.APP_PORT }}
-                  -e MODEL_NAME=${{ vars.MODEL_NAME }}
-                  .
+                  -e MODEL_NAME=${{ vars.MODEL_NAME }} .
           docker push "${DOCKER_TAG}"
       - name: 'Deploy to Cloud Run'
 

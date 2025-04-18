@@ -44,7 +44,7 @@ func (c *Controller) SendError(err error, code int, w http.ResponseWriter) {
 	c.SendJSON(w, msg, code)
 }
 
-func (c *Controller) GetContent(v interface{}, r *http.Request) error {
+func (c *Controller) GetContent(v any, r *http.Request) error {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(v)
 	return err

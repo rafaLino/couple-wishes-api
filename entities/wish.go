@@ -11,6 +11,7 @@ type WishInput struct {
 	Description string `json:"description"`
 	Price       string `json:"price"`
 	CoupleID    int64  `json:"couple_id"`
+	Completed   bool   `json:"completed"`
 }
 
 type WishUrlInput struct {
@@ -32,7 +33,7 @@ func MapToWish(wish WishInput) db.Wish {
 		Url:         pgtype.Text{String: wish.Url, Valid: true},
 		Description: pgtype.Text{String: wish.Description, Valid: true},
 		Price:       pgtype.Text{String: wish.Price, Valid: true},
-		Completed:   pgtype.Bool{Bool: false, Valid: true},
+		Completed:   pgtype.Bool{Bool: wish.Completed, Valid: true},
 		CoupleID:    pgtype.Int8{Int64: wish.CoupleID, Valid: true},
 	}
 }

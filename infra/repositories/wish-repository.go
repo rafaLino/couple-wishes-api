@@ -59,13 +59,6 @@ func (r *WishRepository) Update(wish *db.Wish) error {
 	return err
 }
 
-func (r *WishRepository) Complete(id int64) error {
-	client, err := r.context.GetClient()
-	client.CompleteWish(r.context.GetContext(), id)
-
-	return err
-}
-
 func (r *WishRepository) Delete(id int64) error {
 	client, err := r.context.GetClient()
 	client.DeleteWish(r.context.GetContext(), id)

@@ -20,11 +20,6 @@ UPDATE wishes
 SET title = $2, description = $3, url = $4, price = $5, completed = $6
 WHERE id = $1;
 
--- name: CompleteWish :execresult
-UPDATE wishes
-SET completed = true
-WHERE id = $1;
-
 -- name: DeleteWish :exec
 DELETE FROM wishes
 WHERE id = $1;

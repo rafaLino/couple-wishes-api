@@ -39,16 +39,6 @@ func (q *Queries) CheckUserName(ctx context.Context, username string) (int64, er
 	return count, err
 }
 
-const completeWish = `-- name: CompleteWish :execresult
-UPDATE wishes
-SET completed = true
-WHERE id = $1
-`
-
-func (q *Queries) CompleteWish(ctx context.Context, id int64) (pgconn.CommandTag, error) {
-	return q.db.Exec(ctx, completeWish, id)
-}
-
 const createCouple = `-- name: CreateCouple :one
 INSERT INTO couples (
   user_id, partner_id

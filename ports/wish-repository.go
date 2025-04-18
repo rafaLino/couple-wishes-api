@@ -8,5 +8,4 @@ type IWishRepository interface {
 	Create(wish *db.Wish) (int64, error)
 	Update(wish *db.Wish) error
 	Delete(id int64) error
-	MaskAsCompleted(id int64) error
 }

@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"io"
 	"net/http"
 	"os"
@@ -42,17 +43,24 @@ func (c *WebhookController) Post(w http.ResponseWriter, r *http.Request) {
 
 	header := r.Header.Get("x-hub-signature-256")
 	apiKey := os.Getenv("API_SECRET")
-	rawBody, _ := io.ReadAll(r.Body)
+	rawBody, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		c.SendError(err, http.StatusInternalServerError, w)
+		return
+	}
+
+	defer r.Body.Close()
 
 	isValid := validMac.ValidMAC(rawBody, []byte(apiKey), header)
 
 	if !isValid {
-		c.SendJSON(w, nil, http.StatusBadRequest)
+		c.SendError(nil, http.StatusBadRequest, w)
 		return
 	}
 
 	var input entities.WhatsAppMessage
-	err := c.GetContent(&input, r)
+	err = json.Unmarshal(rawBody, &input)
 
 	if err != nil {
 		c.SendError(err, http.StatusBadRequest, w)

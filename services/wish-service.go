@@ -60,10 +60,6 @@ func (s *WishService) Delete(id int64) error {
 	return s.repository.Delete(id)
 }
 
-func (s *WishService) MaskAsCompleted(id int64) error {
-	return s.repository.MaskAsCompleted(id)
-}
-
 func (s *WishService) Create(text string, coupleId int64) (*entities.WishOutput, error) {
 	input, err := s.aiAdapter.GenerateResponse(text)
 

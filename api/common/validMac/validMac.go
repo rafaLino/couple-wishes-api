@@ -3,11 +3,15 @@ package validMac
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"encoding/hex"
+	"strings"
 )
 
-func ValidMAC(message, messageMAC, key []byte) bool {
-	mac := hmac.New(sha256.New, key)
-	mac.Write(message)
-	expectedMAC := mac.Sum(nil)
-	return hmac.Equal(messageMAC, expectedMAC)
+func ValidMAC(body, secret []byte, header string) bool {
+	signature := strings.Split(header, "=")[1]
+	sig, _ := hex.DecodeString(signature)
+	mac := hmac.New(sha256.New, secret)
+	mac.Write(body)
+
+	return hmac.Equal(sig, mac.Sum(nil))
 }

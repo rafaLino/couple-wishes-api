@@ -40,10 +40,11 @@ func (c *WebhookController) Post(w http.ResponseWriter, r *http.Request) {
 	var service ports.IWishService
 	container.Resolve(&service)
 
-	signature := r.Header.Get("x-hub-signature-256")
+	header := r.Header.Get("x-hub-signature-256")
+	apiKey := os.Getenv("API_SECRET")
 	rawBody, _ := io.ReadAll(r.Body)
 
-	isValid := validMac.ValidMAC(rawBody, []byte(signature), []byte(WEBHOOK_VERIFY_TOKEN))
+	isValid := validMac.ValidMAC(rawBody, []byte(apiKey), header)
 
 	if !isValid {
 		c.SendJSON(w, nil, http.StatusBadRequest)
@@ -54,14 +55,14 @@ func (c *WebhookController) Post(w http.ResponseWriter, r *http.Request) {
 	err := c.GetContent(&input, r)
 
 	if err != nil {
-		c.SendError(nil, http.StatusBadRequest, w)
+		c.SendError(err, http.StatusBadRequest, w)
 		return
 	}
 
 	err = service.CreateFromWhatsApp(input)
 
 	if err != nil {
-		c.SendError(err, http.StatusBadRequest, w)
+		c.SendError(err, http.StatusInternalServerError, w)
 		return
 	}
 

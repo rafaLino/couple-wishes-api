@@ -4,7 +4,7 @@ name: 'Build and Deploy to Cloud Run'
 on:
   push:
     branches:
-      - '"main"'
+      ["main"]
 
 env:
   PROJECT_ID: ${{ vars.PROJECT_ID }}

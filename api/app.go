@@ -65,7 +65,7 @@ func (a *App) Run() *App {
 	port := os.Getenv("APP_PORT")
 
 	if port == "" {
-		port = ":3201"
+		port = "3201"
 	}
 
 	originString := os.Getenv("ORIGIN_ALLOWED")
@@ -78,6 +78,8 @@ func (a *App) Run() *App {
 	})
 
 	handler := c.Handler(a.router)
+
+	port = ":" + port
 
 	fmt.Printf("couple-wishes-api Running on Port: %s\n", port)
 

@@ -45,7 +45,16 @@ jobs:
       - name: 'Build and Push Container'
         run: |-
           DOCKER_TAG="${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_NAME }}/${{ env.SERVICE }}:${{ github.sha }}"
-          docker build --tag "${DOCKER_TAG}" .
+          docker build --tag "${DOCKER_TAG}" 
+                  -e CONNECTION_STRING=${{ secrets.CONNECTION_STRING }}
+                  -e API_KEY=${{ secrets.API_KEY }}
+                  -e GRAPH_API_TOKEN=${{ secrets.GRAPH_API_TOKEN }} 
+                  -e API_SECRET=${{ secrets.API_SECRET }}
+                  -e JWT_SECRET-${{ secrets.JWT_SECRET }}
+                  -e WEBHOOK_VERIFY_TOKEN=${{ secrets.WEBHOOK_VERIFY_TOKEN }}
+                  -e APP_PORT=${{ vars.APP_PORT }}
+                  -e MODEL_NAME=${{ vars.MODEL_NAME }}
+                  .
           docker push "${DOCKER_TAG}"
       - name: 'Deploy to Cloud Run'
 

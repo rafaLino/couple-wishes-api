@@ -23,6 +23,10 @@ func NewUserRepository(c *dbclient.DbContext) (ports.IUserRepository, error) {
 
 func (r *UserRepository) GetAll() ([]entities.User, error) {
 	client, err := r.context.GetClient()
+
+	if err != nil {
+		return nil, err
+	}
 	usersRow, err := client.GetUsers(r.context.GetContext())
 
 	users := entities.MapToUsers(usersRow)
@@ -32,6 +36,10 @@ func (r *UserRepository) GetAll() ([]entities.User, error) {
 
 func (r *UserRepository) Get(id int64) (*entities.User, error) {
 	client, err := r.context.GetClient()
+
+	if err != nil {
+		return nil, err
+	}
 	userRow, err := client.GetUser(r.context.GetContext(), id)
 
 	user := entities.MapGetUserRowToUser(userRow)
@@ -41,6 +49,10 @@ func (r *UserRepository) Get(id int64) (*entities.User, error) {
 
 func (r *UserRepository) CheckUsername(username string) (bool, error) {
 	client, err := r.context.GetClient()
+
+	if err != nil {
+		return false, err
+	}
 	count, err := client.CheckUserName(r.context.GetContext(), username)
 
 	exists := count > 0
@@ -50,6 +62,10 @@ func (r *UserRepository) CheckUsername(username string) (bool, error) {
 
 func (r *UserRepository) CheckPassword(username valueObjects.Username, password valueObjects.Password) (*entities.User, error) {
 	client, err := r.context.GetClient()
+
+	if err != nil {
+		return nil, err
+	}
 	user, err := client.GetUserWithPassword(r.context.GetContext(), username.String())
 
 	if err != nil {
@@ -80,6 +96,11 @@ func (r *UserRepository) CheckPassword(username valueObjects.Username, password 
 
 func (r *UserRepository) Create(user *entities.User) (int64, error) {
 	client, err := r.context.GetClient()
+
+	if err != nil {
+		return 0, err
+	}
+
 	userId, err := client.CreateUser(r.context.GetContext(), db.CreateUserParams{
 		Name:     user.Name,
 		Username: user.Username.String(),
@@ -92,6 +113,10 @@ func (r *UserRepository) Create(user *entities.User) (int64, error) {
 
 func (r *UserRepository) Update(user *entities.User) error {
 	client, err := r.context.GetClient()
+
+	if err != nil {
+		return err
+	}
 	client.UpdateUser(r.context.GetContext(), db.UpdateUserParams{
 		ID:   user.ID,
 		Name: user.Name,
@@ -102,6 +127,11 @@ func (r *UserRepository) Update(user *entities.User) error {
 
 func (r *UserRepository) ChangePassword(id int64, password valueObjects.Password) error {
 	client, err := r.context.GetClient()
+
+	if err != nil {
+		return err
+	}
+
 	client.ChangePassword(r.context.GetContext(), db.ChangePasswordParams{
 		ID:       id,
 		Password: password.Value(),
@@ -118,6 +148,10 @@ func (r *UserRepository) Delete(id int64) error {
 
 func (r *UserRepository) GetPartnerUsername(id, userId int64) (string, error) {
 	client, err := r.context.GetClient()
+
+	if err != nil {
+		return "", nil
+	}
 	partnerName, err := client.GetPartnerName(r.context.GetContext(), db.GetPartnerNameParams{
 		ID:   id,
 		ID_2: userId,
@@ -133,6 +167,9 @@ func (r *UserRepository) GetPartnerUsername(id, userId int64) (string, error) {
 func (r *UserRepository) CreateCouple(userId, partnerId int64) (int64, error) {
 	client, err := r.context.GetClient()
 
+	if err != nil {
+		return 0, err
+	}
 	id, err := client.CreateCouple(r.context.GetContext(), db.CreateCoupleParams{
 		UserID:    pgtype.Int8{Int64: userId, Valid: true},
 		PartnerID: pgtype.Int8{Int64: partnerId, Valid: true},
@@ -150,6 +187,10 @@ func (r *UserRepository) DeleteCouple(coupleId int64) error {
 
 func (r *UserRepository) GetByUsername(username valueObjects.Username) (*entities.User, error) {
 	client, err := r.context.GetClient()
+
+	if err != nil {
+		return nil, err
+	}
 	userRow, err := client.GetUserByUsername(r.context.GetContext(), username.String())
 
 	var coupleID int64
@@ -172,6 +213,10 @@ func (r *UserRepository) GetByUsername(username valueObjects.Username) (*entitie
 
 func (r *UserRepository) GetByPhone(phone string) (*entities.User, error) {
 	client, err := r.context.GetClient()
+
+	if err != nil {
+		return nil, err
+	}
 	userRow, err := client.GetUserByPhone(r.context.GetContext(), phone)
 
 	var coupleID int64

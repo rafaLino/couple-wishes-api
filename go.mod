@@ -24,6 +24,7 @@ require (
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.5 // indirect
+	github.com/gorilla/securecookie v1.1.2 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.51.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.51.0 // indirect
@@ -46,6 +47,7 @@ require (
 	github.com/golobby/container/v3 v3.3.2
 	github.com/google/generative-ai-go v0.19.0
 	github.com/gorilla/mux v1.8.1
+	github.com/gorilla/sessions v1.4.0
 	github.com/jackc/pgpassfile v1.0.0 // indirect
 	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/joho/godotenv v1.5.1

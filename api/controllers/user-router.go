@@ -64,6 +64,11 @@ func NewUserRouter() common.Bundle {
 			Path:    `/users/login`,
 			Handler: ctrl.Login,
 		},
+		{
+			Method:  http.MethodPost,
+			Path:    `/users/refresh`,
+			Handler: ctrl.RefreshToken,
+		},
 	}
 
 	return &UserRouter{routes: r}

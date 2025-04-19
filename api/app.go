@@ -9,6 +9,7 @@ import (
 
 	"github.com/golobby/container/v3"
 	"github.com/rafaLino/couple-wishes-api/api/common"
+	"github.com/rafaLino/couple-wishes-api/api/common/sessions"
 	"github.com/rafaLino/couple-wishes-api/api/controllers"
 	"github.com/rafaLino/couple-wishes-api/api/ioc"
 	dbclient "github.com/rafaLino/couple-wishes-api/infra/db-client"
@@ -75,6 +76,7 @@ func (a *App) Run() *App {
 		AllowedOrigins:   originsAllowed,
 		AllowCredentials: true,
 		AllowedHeaders:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 	})
 
 	handler := c.Handler(a.router)
@@ -100,12 +102,12 @@ func initDependencies() {
 	var aiAdapter ports.AIAdapter
 	container.Resolve(&aiAdapter)
 	aiAdapter.Connect()
+	sessions.Start()
 }
 
 func HealthCheck(router *mux.Router) {
 	router.HandleFunc("/healthy", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(200)
 		w.Write([]byte("live!"))
-		return
 	})
 }

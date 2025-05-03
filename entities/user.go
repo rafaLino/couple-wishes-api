@@ -38,7 +38,7 @@ type UserOutput struct {
 	ID       int64  `json:"id"`
 	Name     string `json:"name"`
 	Username string `json:"username"`
-	Partner  string `json:"partner"`
+	Partner  string `json:"partner,omitempty"`
 	CoupleID int64  `json:"couple_id"`
 }
 

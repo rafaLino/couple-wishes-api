@@ -93,7 +93,3 @@ func (c *Controller) GetUser(r *http.Request) (*entities.User, bool) {
 	user, ok := r.Context().Value("user").(*entities.User)
 	return user, ok
 }
-
-func (c *Controller) GenerateToken(user *entities.User) (string, *entities.User, error) {
-	return jwtToken.GenerateToken(*user)
-}

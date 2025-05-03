@@ -18,6 +18,9 @@ func NewWishRepository(c *dbclient.DbContext) (ports.IWishRepository, error) {
 
 func (r *WishRepository) Get(id int64) (*db.Wish, error) {
 	client, err := r.context.GetClient()
+	if err != nil {
+		return nil, err
+	}
 	wish, err := client.GetWish(r.context.GetContext(), id)
 
 	return &wish, err
@@ -25,7 +28,9 @@ func (r *WishRepository) Get(id int64) (*db.Wish, error) {
 
 func (r *WishRepository) GetAll(coupleID int64) ([]db.Wish, error) {
 	client, err := r.context.GetClient()
-
+	if err != nil {
+		return nil, err
+	}
 	wishes, err := client.GetWishes(r.context.GetContext(), pgtype.Int8{Int64: coupleID, Valid: true})
 
 	return wishes, err
@@ -33,6 +38,11 @@ func (r *WishRepository) GetAll(coupleID int64) ([]db.Wish, error) {
 
 func (r *WishRepository) Create(wish *db.Wish) (int64, error) {
 	client, err := r.context.GetClient()
+
+	if err != nil {
+		return 0, err
+	}
+
 	wishId, err := client.CreateWish(r.context.GetContext(), db.CreateWishParams{
 		Title:       wish.Title,
 		Url:         wish.Url,
@@ -61,6 +71,10 @@ func (r *WishRepository) Update(wish *db.Wish) error {
 
 func (r *WishRepository) Delete(id int64) error {
 	client, err := r.context.GetClient()
+
+	if err != nil {
+		return err
+	}
 	client.DeleteWish(r.context.GetContext(), id)
 
 	return err

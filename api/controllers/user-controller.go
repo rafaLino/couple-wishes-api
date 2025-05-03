@@ -7,6 +7,7 @@ import (
 	"github.com/golobby/container/v3"
 	"github.com/rafaLino/couple-wishes-api/api/common"
 	"github.com/rafaLino/couple-wishes-api/api/common/jwtToken"
+	"github.com/rafaLino/couple-wishes-api/api/common/sessions"
 	"github.com/rafaLino/couple-wishes-api/entities"
 	"github.com/rafaLino/couple-wishes-api/ports"
 )
@@ -222,7 +223,77 @@ func (c *UserController) Login(w http.ResponseWriter, r *http.Request) {
 		c.SendError(nil, http.StatusUnauthorized, w)
 		return
 	}
-	token, user, err := c.GenerateToken(user)
+	token, err := jwtToken.GenerateToken(*user)
+
+	if err != nil {
+		c.SendError(err, http.StatusInternalServerError, w)
+	}
+
+	refreshToken, err := jwtToken.GenerateRefreshToken(input.Username, input.Password)
+
+	if err != nil {
+		c.SendError(err, http.StatusBadRequest, w)
+		return
+	}
+
+	session, err := sessions.Get(r)
+
+	if err != nil {
+		c.SendError(err, http.StatusInternalServerError, w)
+		return
+	}
+
+	session.Values["refreshToken"] = refreshToken
+	err = session.Save(r, w)
+
+	if err != nil {
+		c.SendError(err, http.StatusInternalServerError, w)
+		return
+	}
+
+	userOutput := entities.MapToUserOutput(*user, "")
+	res := jwtToken.TokenDataOutput{
+		Token:        token,
+		RefreshToken: refreshToken,
+		User:         userOutput,
+	}
+
+	c.SendJSON(w, res, http.StatusOK)
+}
+
+func (c *UserController) RefreshToken(w http.ResponseWriter, r *http.Request) {
+	session, err := sessions.Get(r)
+
+	if err != nil {
+		c.SendError(err, http.StatusInternalServerError, w)
+		return
+	}
+
+	if refreshToken, ok := session.Values["refreshToken"].(string); !ok || refreshToken == "" {
+		http.Redirect(w, r, "/login", http.StatusUnauthorized)
+		return
+	}
+
+	refreshToken := session.Values["refreshToken"].(string)
+
+	input, err := jwtToken.VerifyRefreshToken(refreshToken)
+
+	if err != nil {
+		c.SendError(err, http.StatusUnauthorized, w)
+		return
+	}
+
+	var service ports.IUserService
+	container.Resolve(&service)
+
+	user, err := service.CheckPassword(input.Username, input.Password)
+
+	if err != nil {
+		c.SendError(nil, http.StatusUnauthorized, w)
+		return
+	}
+
+	token, err := jwtToken.GenerateToken(*user)
 
 	if err != nil {
 		c.SendError(err, http.StatusBadRequest, w)
@@ -230,10 +301,10 @@ func (c *UserController) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userOutput := entities.MapToUserOutput(*user, "")
-	res := jwtToken.TokenData{
+	response := &jwtToken.TokenDataOutput{
 		Token: token,
 		User:  userOutput,
 	}
 
-	c.SendJSON(w, res, http.StatusOK)
+	c.SendJSON(w, response, http.StatusOK)
 }

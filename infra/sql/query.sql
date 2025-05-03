@@ -5,7 +5,7 @@ WHERE id = $1 LIMIT 1;
 -- name: GetWishes :many
 SELECT * FROM wishes
 WHERE couple_id = $1
-ORDER BY created_at;
+ORDER BY completed, created_at;
 
 -- name: CreateWish :one
 INSERT INTO wishes (

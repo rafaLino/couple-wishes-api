@@ -3,7 +3,7 @@ docker network create --driver bridge postgres-network
 ```
 
 ```bash
-docker run --name postgresdb --network=postgres-network -p 5432:5432 -v ~/tmp/database:/var/lib/postgresql/data -e POSTGRES_PASSWORD=1234 -d postgres
+docker run --name postgresdb --network=postgres-network -p 5432:5432 -v ~/tmp/database:/var/lib/postgresql/data -e POSTGRES_PASSWORD=1234 -d postgres:alpine
 ```
 
 ```bash

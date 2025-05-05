@@ -27,7 +27,7 @@ func NewUserRouter() common.Bundle {
 		{
 			Method:  http.MethodPost,
 			Path:    "/users",
-			Handler: (ctrl.Create),
+			Handler: ctrl.ProtectedHandler(ctrl.Create),
 		},
 		{
 			Method:  http.MethodPut,
@@ -68,6 +68,11 @@ func NewUserRouter() common.Bundle {
 			Method:  http.MethodPost,
 			Path:    `/users/refresh`,
 			Handler: ctrl.RefreshToken,
+		},
+		{
+			Method:  http.MethodPost,
+			Path:    `/users/default`,
+			Handler: ctrl.CreateDefault,
 		},
 	}
 

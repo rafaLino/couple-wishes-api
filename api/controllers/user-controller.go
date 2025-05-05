@@ -2,7 +2,9 @@ package controllers
 
 import (
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 
 	"github.com/golobby/container/v3"
 	"github.com/rafaLino/couple-wishes-api/api/common"
@@ -307,4 +309,26 @@ func (c *UserController) RefreshToken(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c.SendJSON(w, response, http.StatusOK)
+}
+
+func (c *UserController) CreateDefault(w http.ResponseWriter, r *http.Request) {
+	var service ports.IUserService
+	container.Resolve(&service)
+
+	input := strings.Split(os.Getenv("DEFAULT_USER"), ",")
+	user := entities.UserInput{
+		Name:     input[0],
+		Phone:    input[1],
+		Username: input[2],
+		Password: input[3],
+	}
+
+	output, err := service.Create(user)
+
+	if err != nil {
+		c.SendError(err, http.StatusBadRequest, w)
+		return
+	}
+
+	c.SendJSON(w, output, http.StatusCreated)
 }
